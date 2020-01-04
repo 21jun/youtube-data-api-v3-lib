@@ -1,0 +1,5 @@
+/.vscode/
+/.idea/
+APIKEYLIST.txt
+__pycache__/
+/venv/
