@@ -19,4 +19,4 @@ SELECT * FROM yt.yt_video_info group by appid;
 ALTER TABLE yt_video_info AUTO_INCREMENT = 1762;
 '''
 yt_video = YouTubeVideo(developer_key_index=6)
-yt_video.get_video_info_list(skip=19)
+yt_video.get_video_info_list(skip=18)

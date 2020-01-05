@@ -6,7 +6,7 @@ class DataBase:
     def __init__(self):
         self.host = "localhost"
         self.port = 3306
-        self.db = "yt"
+        self.db = "yt" # your mysql schema name
         self.user = "root"
         self.password = "1qazxc"
         self.autocommit = True
