@@ -31,7 +31,7 @@ videoidsearch.sql
 `APIKEYLIST.txt` 파일을 생성하고,
 
 ```
-AIz------your api key------2UWVv4UNv3Hs 이 뒤로는 메모 (해당 계정의 ID/PW를 적어둠)
+AIz------your api key------2UWVv4UNv3Hs 이 뒤로는 메모 (쉽게 관리하기 위해 해당 계정의 ID/PW를 적어둠)
 AIz------your api key------2UWVv4UNv3Hs ID PW
 ... 
 ```
@@ -54,6 +54,8 @@ AIz------your api key------2UWVv4UNv3Hs ID PW
 from youtube.search import YouTubeSearch
 # 비디오 검색
 yt_search = YouTubeSearch(api_call_limit=2, developer_key_index=4)
+# API KEY의 할당량을 초과하여 다시 수집할때는
+# 이미 수집된 결과만큼 skip에 할당 (SEARCHLIST.txt)
 yt_search.search_list(skip=0) 
 ```
 
@@ -73,6 +75,9 @@ yt_video = YouTubeVideo(developer_key_index=6)
 yt_video.get_video_info(appid, name, video_id)
 
 # videoidsearch 에 존재하는 모든 video에 대해서 수집
+# 수집중 API KEY의 할당량이 끝나는 경우.
+# 다른 API KEY를 사용하여 진행
+# 이때, 이미 수집한 video_info 수를 Skip으로 넣어줌  
 yt_video.get_video_info_list(skip=18)
 ```
 
