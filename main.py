@@ -26,4 +26,4 @@ ALTER TABLE yt_video_info AUTO_INCREMENT = 1762;
 # 비디오 댓글 저장
 yt_comment = YouTubeComment(developer_key_index=0)
 # yt_comment.get_comments(videoId='QUYXlMFlhlk', verbose=True, db_insert=False, gameName='d', appid=0000, channelId='1')
-yt_comment.comment_list(skip=3)
+yt_comment.comment_list(skip=0)
