@@ -7,6 +7,7 @@ import pymysql
 import re
 
 from util import DEVELOPER_KEY_LIST, DEVELOPER_AUTH_LIST
+from util.load import load_target_list
 from database.connector import DataBase
 
 YOUTUBE_API_VERSION = "v3"
@@ -23,8 +24,8 @@ class YouTubeComment:
 
     def __init__(self, developer_key_index):
         self.developer_key_index = developer_key_index % len(DEVELOPER_KEY_LIST)
-        self.developer_key = DEVELOPER_KEY_LIST[developer_key_index]
-        self.developer_auth = DEVELOPER_AUTH_LIST[developer_key_index]
+        self.developer_key = DEVELOPER_KEY_LIST[self.developer_key_index]
+        self.developer_auth = DEVELOPER_AUTH_LIST[self.developer_key_index]
         print(self.developer_key, self.developer_auth)
 
         self.youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.developer_key)
@@ -32,8 +33,8 @@ class YouTubeComment:
 
     def _rebuild(self, developer_key_index):
         self.developer_key_index = developer_key_index % len(DEVELOPER_KEY_LIST)
-        self.developer_key = DEVELOPER_KEY_LIST[developer_key_index]
-        self.developer_auth = DEVELOPER_AUTH_LIST[developer_key_index]
+        self.developer_key = DEVELOPER_KEY_LIST[self.developer_key_index]
+        self.developer_auth = DEVELOPER_AUTH_LIST[self.developer_key_index]
         print("Rebuilding...")
         print(developer_key_index, '|', self.developer_key, self.developer_auth)
         self.youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.developer_key)
@@ -48,14 +49,21 @@ class YouTubeComment:
         video_ids = [{'appid': id[0], 'gameName': id[1], 'videoId': id[2], 'channelId': id[3]} for id in video_ids]
         return video_ids
 
-    def routine(self):
-        video_ids = self.fetch_video_ids(condition=" where date='2020-01-14 00:00:00';")
-        for i, video in enumerate(video_ids):
-            if i%100==99:
-                self._rebuild(self.developer_key_index + 1)
-            print(i, '/', len(video_ids), video['gameName'], '|', video['appid'], '|', video['videoId'])
-            self.get_comments(videoId=video['videoId'], appid=video['appid'], gameName=video['gameName'],
-                              channelId=video['channelId'], db_insert=True, verbose=False)
+    def comment_list(self, skip=0, file_path='TARGETLIST.txt'):
+        print(skip)
+        games = load_target_list(file_path)
+        for i, game in enumerate(games):
+            print(i, "/", len(games), '|', game['name'])
+            if i < skip:
+                continue
+            condition = " where appid=" + game['appid']
+            video_ids = self.fetch_video_ids(condition=condition)
+            print(len(video_ids))
+
+            for j, video in enumerate(video_ids):
+                print(j, '/', len(video_ids), video['gameName'], '|', video['appid'], '|', video['videoId'])
+                self.get_comments(videoId=video['videoId'], appid=video['appid'], gameName=video['gameName'],
+                                  channelId=video['channelId'], db_insert=True, verbose=False)
 
     def _get_comment_threads(self, videoid, next_page_token):
         try:
@@ -70,11 +78,12 @@ class YouTubeComment:
         except HttpError:
             # API KEY 할당량 초과하면 다음 키로 다시 빌드
             self._rebuild(self.developer_key_index + 1)
+            return "restart"
         except Exception as e:
             print(e)
             return None
 
-    def get_comments(self, videoId, appid, gameName, channelId='', db_insert=True, verbose=False):
+    def get_comments(self, videoId, appid, gameName, channelId, db_insert=True, verbose=False):
 
         next_page_token = ''
         further = True
@@ -117,6 +126,9 @@ class YouTubeComment:
             results = self._get_comment_threads(videoId, next_page_token)
             if results is None:
                 return
+            elif results is "restart":
+                print("restart comment thread after rebuilding...")
+                continue
             next_page_token = ''
 
             for item in results["items"]:

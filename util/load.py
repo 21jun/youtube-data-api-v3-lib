@@ -15,5 +15,12 @@ def load_search_list(path='SEARCHLIST.txt'):
     return game_list
 
 
+def load_target_list(path='TARGETLIST.txt'):
+    with open(path, 'rt', encoding='UTF8') as f:
+        games = f.readlines()
+    game_list: List[str] = [{'appid': game.split()[0], 'name': ' '.join(game.split()[1:])} for game in games]
+    return game_list
+
+
 if __name__ == '__main__':
     print(load_search_list())
