@@ -53,7 +53,7 @@ class YouTubeComment:
         print(skip)
         games = load_target_list(file_path)
         for i, game in enumerate(games):
-            print(i, "/", len(games), '|', game['name'])
+            print("[", i, "/", len(games), ']', game['name'])
             if i < skip:
                 continue
             condition = " where appid=" + game['appid']
