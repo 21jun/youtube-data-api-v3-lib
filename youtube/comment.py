@@ -59,7 +59,7 @@ class YouTubeComment:
             if game['appid'] == 0:
                 print("STOP HERE")
                 break
-            condition = " where appid=" + game['appid']
+            condition = " where appid=" + game['appid'] + " and date = '2020-01-14 00:00:00';"
             video_ids = self.fetch_video_ids(condition=condition)
             print(len(video_ids))
 
@@ -78,10 +78,11 @@ class YouTubeComment:
                 pageToken=next_page_token
             ).execute()
             return results
-        except HttpError:
+        except HttpError as e:
+            print(e)
             # API KEY 할당량 초과하면 다음 키로 다시 빌드
             self._rebuild(self.developer_key_index + 1)
-            return "restart"
+            return None
         except Exception as e:
             print(e)
             return None
@@ -129,9 +130,7 @@ class YouTubeComment:
             results = self._get_comment_threads(videoId, next_page_token)
             if results is None:
                 return
-            elif results is "restart":
-                print("restart comment thread after rebuilding...")
-                continue
+
             next_page_token = ''
 
             for item in results["items"]:
