@@ -10,11 +10,16 @@ from database.connector import DataBase
 YOUTUBE_API_VERSION = "v3"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 
+"""
+DATABASE used:
+yt_videoidsearch
+"""
 
 class YouTubeSearch:
 
     def __init__(self, api_call_limit, developer_key_index):
-        self.api_call_limit = api_call_limit  # limit number of search items
+        self.api_call_limit = api_call_limit    # limit number of api call 
+                                                # total number of items = api_call_limit * 50
         developer_key = DEVELOPER_KEY_LIST[developer_key_index]
         developer_auth = DEVELOPER_AUTH_LIST[developer_key_index]
         print(developer_key, developer_auth)

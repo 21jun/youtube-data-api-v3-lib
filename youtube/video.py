@@ -9,6 +9,12 @@ from database.connector import DataBase
 YOUTUBE_API_VERSION = "v3"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 
+"""
+DATABASE used:
+yt_videoidsearch
+yt_video_info
+"""
+
 
 class YouTubeVideo:
 
@@ -115,5 +121,3 @@ class YouTubeVideo:
                                        dislike_count=dislike_count,
                                        favorite_count=favorite_count,
                                        comment_count=comment_count, pub_date=pub_date, date=now))
-
-
