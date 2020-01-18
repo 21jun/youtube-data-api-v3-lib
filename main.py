@@ -1,5 +1,6 @@
 from youtube.search import YouTubeSearch
 from youtube.video import YouTubeVideo
+from youtube.comment import YouTubeComment
 
 """
 https://developers.google.com/youtube/v3/determine_quota_cost?hl=ko
@@ -18,5 +19,11 @@ SELECT * FROM yt.yt_video_info;
 SELECT * FROM yt.yt_video_info group by appid;	
 ALTER TABLE yt_video_info AUTO_INCREMENT = 1762;
 '''
-yt_video = YouTubeVideo(developer_key_index=6)
-yt_video.get_video_info_list(skip=18)
+# yt_video = YouTubeVideo(developer_key_index=6)
+# yt_video.get_video_info_list(skip=18)
+
+
+# 비디오 댓글 저장
+yt_comment = YouTubeComment(developer_key_index=0)
+# yt_comment.get_comments(videoId='QENJuYSQ3jo')
+yt_comment.routine()
