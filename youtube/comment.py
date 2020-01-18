@@ -56,6 +56,9 @@ class YouTubeComment:
             print("[", i, "/", len(games), ']', game['name'])
             if i < skip:
                 continue
+            if game['appid'] == 0:
+                print("STOP HERE")
+                break
             condition = " where appid=" + game['appid']
             video_ids = self.fetch_video_ids(condition=condition)
             print(len(video_ids))
