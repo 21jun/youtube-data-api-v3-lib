@@ -4,6 +4,7 @@ from googleapiclient.discovery import build
 import pymysql
 
 from util import DEVELOPER_KEY_LIST, DEVELOPER_AUTH_LIST
+from util.load import load_target_list
 from database.connector import DataBase
 
 YOUTUBE_API_VERSION = "v3"
@@ -26,8 +27,9 @@ class YouTubeVideo:
         self.youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.developer_key)
         self.db = DataBase()
 
-    def fetch_all_games(self):
-        SQL = "SELECT appid, gameName from yt_videoidsearch group by appid;"
+    def fetch_all_games(self, condition=" where date='2020-01-14 00:00:00';"):
+        SQL = "SELECT appid, gameName from yt_videoidsearch group by appid"
+        SQL = SQL + condition
         self.db.cur.execute(SQL)
 
         games = self.db.cur.fetchall()
@@ -50,26 +52,40 @@ class YouTubeVideo:
         video_ids = [{'appid': id[0], 'name': id[1], 'videoId': id[2]} for id in video_ids]
         return video_ids
 
-    def get_video_info_list(self, skip=0):
-        games = self.fetch_all_games()
+    def get_video_info_list(self, skip=0, file_path='TARGETLIST.txt', qtype="file", db_insert=True):
+        
+        if qtype=="file":
+            games = load_target_list(file_path)
+        else:
+            games = self.fetch_all_games()
+
         for i, game in enumerate(games):
+            print("[", i, "/", len(games), ']', game['name'])
             if i < skip:
                 continue
+            if game['appid'] == '0':
+                print("STOP HERE")
+                break
             print(game['appid'], game['name'])
             video_ids = self.fetch_video_ids(game['appid'])
-            for video_id in video_ids:
-                self.get_video_info(game['appid'], game['name'], video_id['videoId'])
+            print(len(video_ids))
+            for j, video in enumerate(video_ids):
+                print(j, '/', len(video_ids), video['name'], '|', video['appid'], '|', video['videoId'])
+                self.get_video_info(game['appid'], game['name'], video['videoId'], db_insert=db_insert)
                 print("|", end="", flush=True)
-            print("")
 
-    def get_video_info(self, appid, name, video_id):
+
+    def get_video_info(self, appid, name, video_id, db_insert):
         video_info = self.youtube.videos().list(
             part="snippet, statistics, contentDetails",
             id=video_id
         ).execute()
 
-        snippet = video_info['items'][0]['snippet']
-
+        try:
+            snippet = video_info['items'][0]['snippet']
+        except:
+            print("video not found")
+            return
         pub_date = parse(snippet['publishedAt']).strftime('%Y-%m-%d %H-%M-%S')
         channel_id = snippet['channelId']
         title = pymysql.escape_string(snippet.get('title', ""))
@@ -85,7 +101,7 @@ class YouTubeVideo:
         now = datetime.datetime.now().strftime('%Y-%m-%d')
 
         SQL = """
-        INSERT INTO `yt`.`yt_video_info`
+        INSERT INTO `yt_video_info`
         (`id`,
         `appid`,
         `gameName`,
@@ -116,8 +132,9 @@ class YouTubeVideo:
         '{pub_date}',
         '{date}');
         """
-        self.db.cur.execute(SQL.format(appid=appid, name=name, video_id=video_id, title=title, channel_id=channel_id,
-                                       description=description, view_count=view_count, like_count=like_count,
-                                       dislike_count=dislike_count,
-                                       favorite_count=favorite_count,
-                                       comment_count=comment_count, pub_date=pub_date, date=now))
+        if db_insert:
+            self.db.cur.execute(SQL.format(appid=appid, name=name, video_id=video_id, title=title, channel_id=channel_id,
+                                        description=description, view_count=view_count, like_count=like_count,
+                                        dislike_count=dislike_count,
+                                        favorite_count=favorite_count,
+                                        comment_count=comment_count, pub_date=pub_date, date=now))
