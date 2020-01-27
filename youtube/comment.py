@@ -49,14 +49,14 @@ class YouTubeComment:
         video_ids = [{'appid': id[0], 'gameName': id[1], 'videoId': id[2], 'channelId': id[3]} for id in video_ids]
         return video_ids
 
-    def comment_list(self, skip=0, file_path='TARGETLIST.txt'):
+    def get_comment_list(self, skip=0, db_insert=True, file_path='TARGETLIST.txt'):
         print(skip)
         games = load_target_list(file_path)
         for i, game in enumerate(games):
             print("[", i, "/", len(games), ']', game['name'])
             if i < skip:
                 continue
-            if game['appid'] == 0:
+            if game['appid'] == '0':
                 print("STOP HERE")
                 break
             condition = " where appid=" + game['appid'] + " and date = '2020-01-14 00:00:00';"
@@ -66,7 +66,7 @@ class YouTubeComment:
             for j, video in enumerate(video_ids):
                 print(j, '/', len(video_ids), video['gameName'], '|', video['appid'], '|', video['videoId'])
                 self.get_comments(videoId=video['videoId'], appid=video['appid'], gameName=video['gameName'],
-                                  channelId=video['channelId'], db_insert=True, verbose=False)
+                                  channelId=video['channelId'], db_insert=db_insert, verbose=False)
 
     def _get_comment_threads(self, videoid, next_page_token):
         try:
