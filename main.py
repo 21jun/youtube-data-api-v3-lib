@@ -19,11 +19,12 @@ SELECT * FROM yt.yt_video_info;
 SELECT * FROM yt.yt_video_info group by appid;	
 ALTER TABLE yt_video_info AUTO_INCREMENT = 1762;
 '''
-# yt_video = YouTubeVideo(developer_key_index=6)
-# yt_video.get_video_info_list(skip=18)
+#TODO: Quata 돌아오면 바로 실행 시키면됨
+yt_video = YouTubeVideo(developer_key_index=2)
+yt_video.get_video_info_list(skip=69, file_path="TARGETLIST.txt", qtype="file", db_insert=False)
 
 
 # 비디오 댓글 저장
-yt_comment = YouTubeComment(developer_key_index=0)
-# yt_comment.get_comments(videoId='QUYXlMFlhlk', verbose=True, db_insert=False, gameName='d', appid=0000, channelId='1')
-yt_comment.comment_list(skip=0)
+# yt_comment = YouTubeComment(developer_key_index=0)
+# # yt_comment.get_comments(videoId='QUYXlMFlhlk', verbose=True, db_insert=False, gameName='d', appid=0000, channelId='1')
+# yt_comment.get_comment_list(db_insert=False,file_path="TEST.txt")

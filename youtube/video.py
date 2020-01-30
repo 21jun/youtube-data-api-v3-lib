@@ -133,8 +133,11 @@ class YouTubeVideo:
         '{date}');
         """
         if db_insert:
-            self.db.cur.execute(SQL.format(appid=appid, name=name, video_id=video_id, title=title, channel_id=channel_id,
-                                        description=description, view_count=view_count, like_count=like_count,
-                                        dislike_count=dislike_count,
-                                        favorite_count=favorite_count,
-                                        comment_count=comment_count, pub_date=pub_date, date=now))
+            try:
+                self.db.cur.execute(SQL.format(appid=appid, name=name, video_id=video_id, title=title, channel_id=channel_id,
+                                            description=description, view_count=view_count, like_count=like_count,
+                                            dislike_count=dislike_count,
+                                            favorite_count=favorite_count,
+                                            comment_count=comment_count, pub_date=pub_date, date=now))
+            except Exception as e:
+                print(e)
