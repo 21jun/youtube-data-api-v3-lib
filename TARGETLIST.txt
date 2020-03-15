@@ -11,16 +11,14 @@
 1057690	Sin Slayers The First Sin
 544810	Kards
 1041710	帝国与文明
-1041710	模拟帝国
 916440	Anno 1800
 887800	Snooker 19
 992640	Pagan Online
-1041710	模拟帝国 Sim Empire
 1055090	Embark
 1051310	Paper Dolls Original
 1052070	Burning Daylight
 1056390	Ultra Savage
-1045050	Furry Girl
+1045050	Furry Girl 
 1053170	Idle Cooking Emperor
 1057680	人间 The Lost We Lost
 899770	Last Epoch
@@ -76,5 +74,5 @@
 746580	HARDCORE MECHA
 936140	Pro Cycling Manager 2019
 928600	F1 2019
-1068820	OVR Toolkit
+1068820	OVR ToolkitA
 0 STOP===========================================================

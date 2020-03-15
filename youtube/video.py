@@ -37,16 +37,26 @@ class YouTubeVideo:
         games = [{'appid': game[0], 'name': game[1]} for game in games]
         return games
 
-    def fetch_video_ids(self, appid='', name='', qtype='appid'):
+    def fetch_video_ids(self, appid='', name='', qtype='appid', condition=None, custom_SQL=None):
         """
         :param qtype: 쿼리 타입 appid 이면 appid 로 검색, name 이면 gameName 으로 검색
         :return: [appid, gameName, videoId] 리스트
         """
+
         if qtype == 'appid':
-            SQL = "SELECT appid, gameName, videoId from yt_videoidsearch where appid={appid};"
+            SQL = "SELECT appid, gameName, videoId from yt_videoidsearch where appid={appid}"
+            if condition is not None:
+                SQL = SQL + condition
+            
+            if custom_SQL is not None:
+                SQL = custom_SQL
+
             self.db.cur.execute(SQL.format(appid=appid))
         elif qtype == 'name':
             SQL = "SELECT appid, gameName, videoId from yt_videoidsearch where gameName={name};"
+            if condition is not None:
+                SQL = SQL + condition
+            
             self.db.cur.execute(SQL.format(name=name))
 
         video_ids = self.db.cur.fetchall()
@@ -54,7 +64,7 @@ class YouTubeVideo:
                      for id in video_ids]
         return video_ids
 
-    def get_video_info_list(self, skip=0, file_path='TARGETLIST.txt', qtype="file", db_insert=True):
+    def get_video_info_list(self, skip=0, file_path='TARGETLIST.txt', qtype="file", condition=None, custom_SQL=None, db_insert=True):
 
         if qtype == "file":
             games = load_target_list(file_path)
@@ -69,7 +79,7 @@ class YouTubeVideo:
                 print("STOP HERE")
                 break
             print(game['appid'], game['name'])
-            video_ids = self.fetch_video_ids(game['appid'])
+            video_ids = self.fetch_video_ids(game['appid'], condition=condition, custom_SQL=custom_SQL)
             print(len(video_ids))
             for j, video in enumerate(video_ids):
                 print(j, '/', len(video_ids),
@@ -98,7 +108,7 @@ class YouTubeVideo:
         tags = snippet.get('tags', [])
         tags = ','.join(tags)[:1000]
         tags = pymysql.escape_string(tags)
-        category_id = snippet.get('categoryId', "")
+        category_id = snippet.get('categoryId', None)
 
         statistics = video_info['items'][0]['statistics']
 
